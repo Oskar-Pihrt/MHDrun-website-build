@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHD Run</title>
+
+    <!-- Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!--
+        PapaParse 5.4.1 — JS knihovna pro parsování CSV v prohlížeči.
+        Slouží k načtení a zpracování karet (úkoly, prokletí) z Google Sheets.
+        Dokumentace: https://www.papaparse.com/
+    -->
+    <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+
+    <!-- Vlastní styly -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ========================
+     NAVIGACE
+     ======================== -->
+<nav class="site-nav" id="site-nav">
+    <div class="nav-inner">
+        <a href="#home" class="nav-logo">MHD Run</a>
+
+        <!-- Desktop navigační odkazy -->
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#home" data-section="home" data-i18n="nav.home">Domů</a></li>
+            <li><a href="#rules" data-section="rules" data-i18n="nav.rules">Pravidla</a></li>
+            <li><a href="#quests" data-section="quests" data-i18n="nav.quests">Úkoly</a></li>
+            <li><a href="#how-to-play" data-section="how-to-play" data-i18n="nav.howToPlay">Jak hrát</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <!-- Přepínač jazyka -->
+            <div class="lang-switcher">
+                <button class="lang-btn active" data-lang="cs">CS</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+
+            <!-- Mobilní hamburger -->
+            <button class="hamburger-btn" id="hamburger-btn" aria-label="Otevřít menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobilní dropdown -->
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <ul>
+        <li><a href="#home" class="mobile-nav-link" data-i18n="nav.home">Domů</a></li>
+        <li><a href="#rules" class="mobile-nav-link" data-i18n="nav.rules">Pravidla</a></li>
+        <li><a href="#quests" class="mobile-nav-link" data-i18n="nav.quests">Úkoly</a></li>
+        <li><a href="#how-to-play" class="mobile-nav-link" data-i18n="nav.howToPlay">Jak hrát</a></li>
+    </ul>
+</div>
+
+<main>
+
+    <!-- ========================
+         DOMŮ
+         ======================== -->
+    <section id="home" class="section section--no-top-pad">
+
+        <!-- Hero -->
+        <div class="hero">
+            <h1 class="hero-title">MHD Run</h1>
+            <p class="hero-subtitle" data-i18n="hero.subtitle">
+                Celoměstská hra na honičku, dopravu a rychlé myšlení.
+                Plňte výzvy, sbírejte mince a unikněte chytačům.
+            </p>
+            <div class="hero-cta">
+                <a href="https://mhd-run.vercel.app/" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+                    <span data-i18n="hero.playApp">Hrát aplikaci</span>
+                </a>
+                <a href="#rules" class="btn btn-secondary" data-i18n="hero.readRules">Číst pravidla</a>
+                <a href="#how-to-play" class="btn btn-outline" data-i18n="hero.howToPlay">Jak hrát</a>
+            </div>
+
+            <div class="hero-image">
+                <div class="slideshow">
+                    <div class="slide active">
+                        <img src="img/header2.jpg" alt="MHD Run — ukázka aplikace">
+                    </div>
+                    <div class="slide">
+                        <img src="img/image.webp" alt="MHD Run — ukázka 1">
+                    </div>
+                    <div class="slide slide--video">
+                        <video src="img/mhdrun1.webm" muted playsinline preload="metadata"></video>
+                        <div class="video-progress"><div class="video-progress-bar"></div></div>
+                    </div>
+                    <div class="slide">
+                        <img src="img/image2.webp" alt="MHD Run — ukázka 2">
+                    </div>
+                    <div class="slide">
+                        <img src="img/image3.webp" alt="MHD Run — ukázka 3">
+                    </div>
+                    <div class="slide slide--video">
+                        <video src="img/mhdrun2.webm" muted playsinline preload="metadata"></video>
+                        <div class="video-progress"><div class="video-progress-bar"></div></div>
+                    </div>
+                    <div class="slideshow-controls">
+                        <button class="slideshow-chevron" id="slideshow-prev" aria-label="Předchozí snímek">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                        </button>
+                        <div class="slideshow-dots">
+                            <button class="dot active" aria-label="Snímek 1"></button>
+                            <button class="dot" aria-label="Snímek 2"></button>
+                            <button class="dot" aria-label="Snímek 3"></button>
+                            <button class="dot" aria-label="Snímek 4"></button>
+                            <button class="dot" aria-label="Snímek 5"></button>
+                            <button class="dot" aria-label="Snímek 6"></button>
+                        </div>
+                        <button class="slideshow-chevron" id="slideshow-next" aria-label="Další snímek">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Funkce hry -->
+        <div class="container">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <!-- Placeholder: nahradit fotkou ze hry (mince, karty) -->
+                    <span class="feature-icon" aria-hidden="true">🪙</span>
+                    <h3 data-i18n="feature1.title">Mince a výzvy</h3>
+                    <p data-i18n="feature1.desc">Lízejte karty úkolů a prokletí a vydělávejte mince. Plňte výzvy kdykoli během hry a navyšujte svůj rozpočet.</p>
+                </div>
+                <div class="feature-card">
+                    <!-- Placeholder: nahradit fotkou ze hry (MHD, doprava) -->
+                    <span class="feature-icon" aria-hidden="true">🚋</span>
+                    <h3 data-i18n="feature2.title">Doprava a strategie</h3>
+                    <p data-i18n="feature2.desc">Utrácejte mince v obchodě za čas na MHD — tramvaj, metro, autobus, loď nebo kolo. Plánujte trasu chytře.</p>
+                </div>
+                <div class="feature-card">
+                    <!-- Placeholder: nahradit fotkou ze hry (honička, cíl) -->
+                    <span class="feature-icon" aria-hidden="true">🏁</span>
+                    <h3 data-i18n="feature3.title">Honička a únik</h3>
+                    <p data-i18n="feature3.desc">Běžci musí dosáhnout tajného cíle. Chytači znají jejich polohu, ale ne cíl — a musí je vyfotit jako první. Role se po každém kole mění.</p>
+                </div>
+            </div>
+
+            <div class="stat-row">
+                <div class="stat-item">
+                    <span class="stat-value">50+</span>
+                    <span class="stat-label" data-i18n="stat1.label">Lokací v Praze</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">4+</span>
+                    <span class="stat-label" data-i18n="stat2.label">Minimálně hráčů</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">∞</span>
+                    <span class="stat-label" data-i18n="stat3.label">Znovuhratelnost</span>
+                </div>
+            </div>
+
+            <aside class="about-box">
+                <h3 data-i18n="about.title">O hře</h3>
+                <p data-i18n="about.body">
+                    MHD Run je inspirovaný hrou Jet Lag: The Game a odehrává se na síti pražské hromadné dopravy.
+                    Dva týmy se střetnou — běžci míří k tajnému cíli, chytači znají jejich polohu, ale ne cíl, a snaží se je dohnat.
+                    Karty, powerupy a omezený čas na MHD dělají každé kolo nepředvídatelným.
+                </p>
+            </aside>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ========================
+         PRAVIDLA
+         ======================== -->
+    <section id="rules" class="section section-alt">
+        <div class="container-narrow">
+            <h2 class="section-title" data-i18n="rules.title">Pravidla</h2>
+            <p class="section-subtitle" data-i18n="rules.subtitle">Vše, co potřebuješ vědět před prvním hraním.</p>
+
+            <!-- Placeholder: nahradit skupinovou fotkou hráčů -->
+            <img class="section-img" src="img/image3.webp" alt="Ukázka hry MHD Run">
+
+            <div class="prose">
+
+                <!-- ===== ČESKÁ PRAVIDLA ===== -->
+                <div data-lang-block="cs">
+                    <div class="rule-section">
+                        <h3>1. Základní koncept</h3>
+                        <p>
+                            Jde o hru dvou týmů na honičku napříč městem. Jeden tým, <strong>Běžci</strong>,
+                            zná svůj tajný cílový bod a snaží se k němu dostat. Cestou je mohou zdržovat úkoly
+                            a prokletí z karet, zatímco pomocí power-upů mohou naopak zpomalovat chytače.
+                            Druhý tým, <strong>Chytači</strong>, vidí aktuální polohu běžců, ale <em>neví, kam míří</em>,
+                            a snaží se je dohnat dřív, než dosáhnou cíle. Po skončení kola se týmy vymění.
+                        </p>
+                    </div>
+
+                    <div class="rule-section">
+                        <h3>2. Průběh kola</h3>
+
+                        <h4>A. Zahájení kola</h4>
+                        <ul>
+                            <li>Nové kolo začíná po chycení běžců nebo na samém začátku hry.</li>
+                            <li>Jeden hráč z týmu běžců nejprve v aplikaci provede <strong>reset</strong> (Nastavení → Resetovat aplikaci).</li>
+                            <li>Poté si tým vylosuje cílovou pozici (Cíle → Vylosovat cíl) — doporučujeme vzdálenost 5–6 km od startu.</li>
+                            <li>Jakmile jsou oba týmy připraveny, <strong>běžci vyráží</strong>. Chytači musí počkat <strong>5 minut</strong>, než vyrazí do terénu. Během čekání už ale mohou sledovat polohu běžců a plánovat trasu.</li>
+                        </ul>
+
+                        <h4>B. Honička</h4>
+                        <ul>
+                            <li><strong>Pohyb:</strong> Hráči využívají MHD (podle toho, co si koupili v obchodě) a vlastní nohy. Tým se nesmí rozdělit.</li>
+                            <li><strong>Cíl běžců:</strong> Dosáhnout cílového místa a pořídit <strong>vítězné selfie s cílem</strong> dříve, než je chytači vyfotí.</li>
+                            <li><strong>Cíl chytačů:</strong> Chytit běžce. Chycení je úspěšné, když chytači pořídí jednu fotografii, na níž jsou všichni členové týmu běžců jasně identifikovatelní.
+                                <ul>
+                                    <li>Fotografie musí být pořízena <strong>bez přiblížení (zoom)</strong>.</li>
+                                    <li>Fotografie <strong>nesmí být pořízena přes sklo</strong> (např. okno autobusu).</li>
+                                </ul>
+                            </li>
+                            <li><strong>Sledování:</strong> Chytači vidí polohu běžců na trackeru. Běžci mohou tracker dočasně vypnout pomocí power-upů z obchodu.</li>
+                        </ul>
+
+                        <h4>C. Konec kola</h4>
+                        <p>Obě fotografie (vítězná i chytací) se posílají do skupinového chatu. Počítá se ta, která byla pořízena dříve. Po skončení kola se role vymění a začne nové kolo.</p>
+                    </div>
+
+                    <div class="rule-section">
+                        <h3>3. Jak vyhrát</h3>
+                        <p><strong>Vítězství běžců:</strong> Dorazí do cíle dříve, než je chytači chytí, a pořídí vítězné selfie s cílem.</p>
+                        <p><strong>Vítězství chytačů:</strong> Pořídí fotografii běžců (bez zoomu, ne přes sklo, všichni jasně identifikovatelní) dříve, než běžci dosáhnou cíle.</p>
+                    </div>
+
+                    <div class="rule-section">
+                        <h3>4. Základní pravidla</h3>
+                        <ul>
+                            <li><strong>Zůstaňte spolu:</strong> Členové týmu musí být vždy pohromadě. Nelze se rozdělit.</li>
+                            <li><strong>MHD:</strong> Hráči smí používat pouze dopravní prostředky zakoupené v obchodě ve hře.</li>
+                            <li><strong>Herní plocha:</strong> Hra se odehrává na ploše s přibližně 50 rovnoměrně rozmístěnými cílovými místy.</li>
+                        </ul>
+                    </div>
+
+                    <div class="rule-section">
+                        <h3>5. Speciální pravidla pro běžce</h3>
+
+                        <h4>A. Peníze</h4>
+                        <ul>
+                            <li>Každý tým běžců začíná hru se startovním kapitálem <strong>70 🪙</strong>. Za ty si kupují dopravu.</li>
+                            <li>Za splnění složitějších úkolů mohou získat <strong>💎</strong>, které slouží k nákupu power-upů.</li>
+                            <li>Zbývající prostředky se přenášejí do dalšího kola, kdy hráči hrají jako běžci.</li>
+                        </ul>
+
+                        <h4>B. Karty (Úkoly a Prokletí)</h4>
+                        <ul>
+                            <li><strong>Lízání:</strong> Kdykoliv běžci nemají aktivní úkol, mohou si líznout novou kartu. Pokud ji líznou v MHD, začíná platit až po výstupu.</li>
+                            <li><strong>Plnění:</strong> Pro získání odměny nebo zbavení se prokletí musí běžci splnit požadavky karty. Úkoly nelze plnit v MHD ani ve vestibulech metra.</li>
+                            <li><strong>Veto a postihy:</strong>
+                                <ul>
+                                    <li><strong>Úkoly</strong> lze vetovat (vzdát se) kdykoliv.</li>
+                                    <li><strong>Prokletí</strong> nelze vetovat a musí být strpěna.</li>
+                                    <li><strong>Postih (4 minuty / 80 % startovního náskoku):</strong> Pokud vetujete úkol nebo porušíte prokletí, tým <strong>nesmí</strong> po dobu trestu používat MHD, nakupovat v obchodě ani lízat další karty. Pokud jste v MHD při porušení prokletí, musíte co nejdříve vystoupit.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="rule-section">
+                        <h3>6. Obchod</h3>
+
+                        <h4>A. Doprava</h4>
+                        <ul>
+                            <li>Pokud cestujete MHD, musíte si koupit příslušné minuty v obchodě. Koupit je možno před, v průběhu nebo po jízdě — ale musíte koupit přesný počet minut podle jízdního řádu (např. IDOS, Pubtran nebo Google mapy).</li>
+                            <li>Platíte za celý tým, ne za každého hráče zvlášť.</li>
+                        </ul>
+
+                        <h4>B. Power-upy</h4>
+                        <ul>
+                            <li>Za 💎 drahokamy lze kupovat power-upy. Lze mít více power-upů současně.</li>
+                            <li>Power-upy mohou dát více peněz, zpomalit chytače nebo poskytnout informace o jejich poloze.</li>
+                            <li>Pokaždé, když power-up koupíte, musíte to oznámit chytačům (doporučujeme přes skupinový chat). Poté ho můžete použít kdykoliv.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- ===== ANGLICKÁ PRAVIDLA ===== -->
+                <div data-lang-block="en" hidden>
+                    <div class="rule-section">
+                        <h3>1. The Basic Concept</h3>
+                        <p>
+                            This is a two-team game of chase across the city. One team, the <strong>Runners</strong>,
+                            know their secret destination and must reach it. Along the way, cards with tasks and curses
+                            can slow them down, while power-ups let them hinder the Chasers.
+                            The other team, the <strong>Chasers</strong>, can see the Runners' current location
+                            but <em>don't know where they're headed</em> — and must catch them before they reach the goal.
+                            After a round ends, teams swap roles.
+                        </p>
+                    </div>
+
+                    <div class="rule-section">
+                        <h3>2. How a Round Works</h3>
+
+                        <h4>A. Starting the Round</h4>
+                        <ul>
+                            <li>A new round begins whenever the Runners are caught or at the very start of the game.</li>
+                            <li>One player on the Runner team first performs a <strong>reset</strong> in the app (Settings → Reset App).</li>
+                            <li>Then the team draws a goal destination (Goals → Draw Goal) — we recommend a distance of 5–6 km from the start.</li>
+                            <li>Once both teams are ready, the <strong>Runners set off</strong>. Chasers must wait <strong>5 minutes</strong> before heading out — but can already watch the Runners' location and plan their route.</li>
+                        </ul>
+
+                        <h4>B. The Chase</h4>
+                        <ul>
+                            <li><strong>Movement:</strong> Players use public transport (what they've bought in the shop) and their own feet. The team cannot split up.</li>
+                            <li><strong>Runners' Goal:</strong> Reach the destination and take a <strong>victory selfie with the goal</strong> before the Chasers photograph them.</li>
+                            <li><strong>Chasers' Goal:</strong> Catch the Runners. A "catch" is successful when the Chasers take a single photo where every member of the Runner team is clearly identifiable.
+                                <ul>
+                                    <li>The photo must be taken <strong>without using zoom</strong>.</li>
+                                    <li>The photo <strong>cannot be taken through glass</strong> (e.g. a bus window).</li>
+                                </ul>
+                            </li>
+                            <li><strong>Tracking:</strong> Chasers can see the Runners' live location on the tracker. Runners can disable the tracker temporarily using power-ups from the shop.</li>
+                        </ul>
+
+                        <h4>C. Ending the Round</h4>
+                        <p>Both photos (the victory selfie and the catch photo) are sent to the group chat. The one taken earlier wins. Roles then swap and a new round begins.</p>
+                    </div>
+
+                    <div class="rule-section">
+                        <h3>3. How to Win</h3>
+                        <p><strong>Runners win:</strong> They reach the goal and take a victory selfie with the destination before being caught.</p>
+                        <p><strong>Chasers win:</strong> They photograph the Runners (no zoom, not through glass, all clearly identifiable) before the Runners reach the goal.</p>
+                    </div>
+
+                    <div class="rule-section">
+                        <h3>4. Core Rules</h3>
+                        <ul>
+                            <li><strong>Stay Together:</strong> Team members must stay together at all times. You cannot split up.</li>
+                            <li><strong>Public Transport:</strong> Players may only use forms of transport purchased in the game's shop.</li>
+                            <li><strong>Playing Area:</strong> The game takes place in an area with around 50 evenly distributed target destinations.</li>
+                        </ul>
+                    </div>
+
+                    <div class="rule-section">
+                        <h3>5. Special Rules for Runners</h3>
+
+                        <h4>A. Money</h4>
+                        <ul>
+                            <li>Each Runner team begins the game with <strong>70 🪙</strong> in starting capital, used to buy transit.</li>
+                            <li>Harder tasks reward <strong>💎 gems</strong>, which are used to buy power-ups.</li>
+                            <li>Any remaining resources carry over to the next round when playing as Runners.</li>
+                        </ul>
+
+                        <h4>B. Cards (Tasks &amp; Curses)</h4>
+                        <ul>
+                            <li><strong>Drawing:</strong> Runners can draw a card at any time as long as they have no active one. If drawn while on public transport, it takes effect only after they exit.</li>
+                            <li><strong>Completing:</strong> Tasks can only be completed outside of public transport and metro vestibules.</li>
+                            <li><strong>Vetoing &amp; Penalties:</strong>
+                                <ul>
+                                    <li><strong>Tasks</strong> can be vetoed at any time.</li>
+                                    <li><strong>Curses</strong> cannot be vetoed and must be endured.</li>
+                                    <li><strong>Penalty (4 minutes / 80% of the starting head start):</strong> If you veto a task or break a curse, your team <strong>cannot</strong> use public transport, buy from the shop, or draw cards for the penalty duration. If you're on transit when a curse is broken, exit as soon as possible.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="rule-section">
+                        <h3>6. Shop</h3>
+
+                        <h4>A. Transport</h4>
+                        <ul>
+                            <li>When you travel by public transport, you must buy the corresponding minutes in the shop. You can buy before, during, or after — but must buy the exact number of minutes shown in the timetable (e.g. IDOS, Pubtran, or Google Maps).</li>
+                            <li>You pay for the whole team, not per individual.</li>
+                        </ul>
+
+                        <h4>B. Power-Ups</h4>
+                        <ul>
+                            <li>For 💎 gems you can buy power-ups. You can hold more than one at a time.</li>
+                            <li>Power-ups can give you more coins, slow down the Chasers, or reveal information about their location.</li>
+                            <li>Every time you buy a power-up, you must announce it to the Chasers (recommended via the group chat). You can then use it whenever you like.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ========================
+         ÚKOLY
+         ======================== -->
+    <section id="quests" class="section">
+        <div class="container">
+            <h2 class="section-title" data-i18n="quests.title">Úkoly a Prokletí</h2>
+            <p class="section-subtitle" data-i18n="quests.subtitle">Všechny karty dostupné ve hře — úkoly ke splnění a prokletí, která musíš vydržet.</p>
+
+            <!-- Filtrovací záložky -->
+            <div class="quest-filters" role="tablist">
+                <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true" data-i18n="quests.filter.all">
+                    Vše
+                </button>
+                <button class="filter-btn" data-filter="quest" role="tab" aria-selected="false" data-i18n="quests.filter.quest">
+                    Úkoly
+                </button>
+                <button class="filter-btn" data-filter="curse" role="tab" aria-selected="false" data-i18n="quests.filter.curse">
+                    Prokletí
+                </button>
+            </div>
+
+            <!-- Počet karet -->
+            <p id="cards-count"></p>
+
+            <!-- Stav načítání -->
+            <div id="cards-loading" class="cards-status">
+                <div class="spinner"></div>
+                <p data-i18n="quests.loading">Načítám karty ze spreadsheetu…</p>
+            </div>
+
+            <!-- Stav chyby -->
+            <div id="cards-error" class="cards-status" hidden>
+                <p class="cards-error-icon">⚠️</p>
+                <p data-i18n="quests.error">Nepodařilo se načíst karty. Zkontroluj připojení a zkus to znovu.</p>
+                <button class="btn btn-outline cards-retry-btn" id="cards-error-retry" data-i18n="quests.retry">Zkusit znovu</button>
+            </div>
+
+            <!-- Mřížka karet -->
+            <div id="cards-grid" class="cards-grid"></div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ========================
+         JAK HRÁT
+         ======================== -->
+    <section id="how-to-play" class="section section-alt">
+        <div class="container-narrow">
+            <h2 class="section-title" data-i18n="htp.title">Jak hrát</h2>
+            <p class="section-subtitle" data-i18n="htp.subtitle">Průvodce webovou aplikací MHD Run a vším, co potřebuješ k zahájení hry.</p>
+
+            <!-- ===== ČESKY ===== -->
+            <div data-lang-block="cs">
+
+                <div class="how-section">
+                    <h2>Co potřebuješ</h2>
+                    <div class="how-steps">
+                        <div class="how-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Hráči</h3>
+                                <p>Alespoň 4 hráči rozdělení do dvou týmů: <strong>Utečníci</strong> a <strong>Chytači</strong>. Každý tým potřebuje alespoň jeden telefon s otevřenou aplikací.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Jízdenka MHD</h3>
+                                <p>Každý hráč by měl mít platnou jízdenku na pražskou MHD (PragoPas nebo denní jízdenku). V aplikaci kupujete čas jízdy — skutečnou jízdenku na nastoupení stále potřebujete.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Sdílení polohy a komunikace</h3>
+                                <p>Chytači potřebují sledovat živou polohu běžců. Doporučujeme aplikaci <strong>Hauk</strong>. Zároveň si všichni hráči vytvořte skupinový chat (např. WhatsApp) — slouží k oznámení power-upů, sdílení vítězných fotek a obecné komunikaci.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="how-section">
+                    <h2>Nastavení aplikace</h2>
+                    <div class="how-steps">
+                        <div class="how-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Otevření aplikace</h3>
+                                <p>Navštivte <a href="https://mhd-run.vercel.app/" class="prose-link">webovou aplikaci MHD Run</a> na telefonu. Nejlépe funguje po přidání na plochu (použijte „Přidat na plochu" v prohlížeči).</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Načtení dat</h3>
+                                <p>Při prvním spuštění aplikace automaticky stáhne všechna data karet a lokací ze spreadsheetu. Lze to spustit ručně přes <strong>Nastavení → Aktualizovat data</strong>.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Konfigurace hry</h3>
+                                <p>V <strong>Nastavení</strong> nastavte startovní mince (výchozí 70 🪙) a drahokamy (výchozí 0 💎) pro běžce. Upravte poloměr losování cíle dle potřeby (výchozí 4,5–6 km).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="how-section">
+                    <h2>Průběh kola</h2>
+                    <div class="how-steps">
+                        <div class="how-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Reset a vylosování cíle</h3>
+                                <p>Jeden hráč z týmu běžců nejprve provede <strong>Nastavení → Resetovat aplikaci</strong>. Poté tým otevře záložku <strong>Cíle</strong> a klepne na „Vylosovat cíl". Aplikace vybere náhodné místo vzdálené 5–6 km. Cíl je tajný — chytači ho neznají.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Líznout karty</h3>
+                                <p>Kdykoliv (ne v MHD) klepněte na „Líznout kartu" v záložce <strong>Karty</strong>. Splněním výzvy získáte 🪙 mince nebo 💎 drahokamy. Prokletí jsou aplikována okamžitě a musí být splněna.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Koupit dopravu</h3>
+                                <p>V <strong>Obchodě</strong> vyberte typ dopravy (tramvaj, metro, autobus atd.) a počet minut jízdy. Zaplaťte svými mincemi.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Použít powerupy</h3>
+                                <p>Obchod také prodává speciální powerupy za 💎 drahokamy. Mohou zdvojnásobit odměny za karty, zablokovat sledování polohy chytači nebo přenést výzvu na protivníka.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h3>Dosáhnout cíle</h3>
+                                <p>Navigujte na místo pomocí MHD (po zakoupení) a pěšky. Po příjezdu pořiďte <strong>vítězné selfie s cílem</strong> a pošlete ho do skupinového chatu. Pokud ho chytači nestihli pořídit dříve — kolo vyhráváte!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="how-section">
+                    <h2>Obrazovky aplikace</h2>
+                    <div class="app-screen-grid">
+                        <div class="app-screen-item">
+                            <div class="screen-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="m9 9.5 3 3 3-3"/></svg>
+                            </div>
+                            <div class="screen-info">
+                                <h4>Karty</h4>
+                                <p>Lízejte a spravujte aktivní karty úkolů a prokletí. Dokončené karty najdete v archivu.</p>
+                            </div>
+                        </div>
+                        <div class="app-screen-item">
+                            <div class="screen-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg>
+                            </div>
+                            <div class="screen-info">
+                                <h4>Obchod</h4>
+                                <p>Kupujte minuty MHD a powerupy za mince a drahokamy.</p>
+                            </div>
+                        </div>
+                        <div class="app-screen-item">
+                            <div class="screen-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+                            </div>
+                            <div class="screen-info">
+                                <h4>Lokace</h4>
+                                <p>Vylosujte cílové místo a zjistěte, jak daleko jste v kilometrech.</p>
+                            </div>
+                        </div>
+                        <div class="app-screen-item">
+                            <div class="screen-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </div>
+                            <div class="screen-info">
+                                <h4>Nastavení</h4>
+                                <p>Konfigurujte mince, drahokamy, poloměr cíle, jazyk a aktualizujte data hry.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder: nahradit screenshoty aplikace -->
+                    <img class="section-img" src="img/PagesImage.jpg" alt="Ukázka obrazovek aplikace MHD Run">
+
+                    <div class="tip-box" data-i18n="htp.tip">
+                        <strong>💡 Tip:</strong> Aplikace funguje plně offline po načtení dat. Přidej ji na plochu, aby se spouštěla jako nativní aplikace.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== ANGLICKY ===== -->
+            <div data-lang-block="en" hidden>
+
+                <div class="how-section">
+                    <h2>What You Need</h2>
+                    <div class="how-steps">
+                        <div class="how-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Players</h3>
+                                <p>At least 4 people split into two teams: <strong>Runners</strong> and <strong>Chasers</strong>. Each team needs at least one phone with the app open.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Transit Pass</h3>
+                                <p>Each player should have a valid Prague public transport pass (PragoPas or a day pass). You will be buying transit time in the app — you still need a real ticket to board.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Location Sharing &amp; Communication</h3>
+                                <p>Chasers need to track the Runners' live location. We recommend the <strong>Hauk</strong> app. All players should also set up a group chat (e.g. WhatsApp) — used to announce power-up activations, share victory photos, and communicate during the game.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="how-section">
+                    <h2>Setting Up the App</h2>
+                    <div class="how-steps">
+                        <div class="how-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Open the App</h3>
+                                <p>Visit <a href="https://mhd-run.vercel.app/" class="prose-link">the MHD Run web app</a> on your phone. It works best when added to your home screen (use "Add to Home Screen" in your browser).</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Fetch Game Data</h3>
+                                <p>On first launch, the app will automatically download all card and location data from the spreadsheet. You can also trigger this manually in <strong>Settings → Update Data</strong>.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Configure the Game</h3>
+                                <p>In <strong>Settings</strong>, set the starting coins (default 70 🪙) and gems (default 0 💎) for the Runners. Adjust the goal radius if needed (default 4.5–6 km).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="how-section">
+                    <h2>Playing a Round</h2>
+                    <div class="how-steps">
+                        <div class="how-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Reset &amp; Draw a Goal</h3>
+                                <p>One player on the Runner team first goes to <strong>Settings → Reset App</strong>. Then the team opens the <strong>Goals</strong> tab and taps "Draw Goal". The app picks a random destination 5–6 km away. The goal is secret — Chasers don't know it.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Draw Cards</h3>
+                                <p>At any time (not on public transport), tap "Draw Card" in the <strong>Cards</strong> tab. Complete the challenge to earn 🪙 coins or 💎 gems. Curses are applied immediately and must be completed.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Buy Transit</h3>
+                                <p>In the <strong>Shop</strong>, select your transit type (tram, metro, bus, etc.) and how many minutes you want to ride. Pay with your coins.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Use Power-Ups</h3>
+                                <p>The Shop also sells special power-up items purchasable with 💎 gems. These can double card rewards, disable the Chasers' location tracker, or transfer a challenge to the opposing team.</p>
+                            </div>
+                        </div>
+                        <div class="how-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h3>Reach Your Goal</h3>
+                                <p>Navigate to your destination using public transport (when purchased) and on foot. Once there, take a <strong>victory selfie with the goal</strong> and post it to the group chat. If the Chasers didn't photograph you first — you win the round!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="how-section">
+                    <h2>App Screens</h2>
+                    <div class="app-screen-grid">
+                        <div class="app-screen-item">
+                            <div class="screen-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="m9 9.5 3 3 3-3"/></svg>
+                            </div>
+                            <div class="screen-info">
+                                <h4>Cards</h4>
+                                <p>Draw and manage your active quest and curse cards. See completed cards in the archive.</p>
+                            </div>
+                        </div>
+                        <div class="app-screen-item">
+                            <div class="screen-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg>
+                            </div>
+                            <div class="screen-info">
+                                <h4>Shop</h4>
+                                <p>Buy transit minutes and power-up items using your coins and gems.</p>
+                            </div>
+                        </div>
+                        <div class="app-screen-item">
+                            <div class="screen-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+                            </div>
+                            <div class="screen-info">
+                                <h4>Location</h4>
+                                <p>Draw your goal destination and see how far away you are in kilometres.</p>
+                            </div>
+                        </div>
+                        <div class="app-screen-item">
+                            <div class="screen-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </div>
+                            <div class="screen-info">
+                                <h4>Settings</h4>
+                                <p>Configure coins, gems, goal radius, language, and refresh game data.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder: replace with app screenshots -->
+                    <img class="section-img" src="img/PagesImage.jpg" alt="MHD Run app screens">
+
+                    <div class="tip-box" data-i18n="htp.tip">
+                        <strong>💡 Tip:</strong> The app works fully offline once data is fetched. Add it to your home screen so it launches like a native app.
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<!-- ========================
+     PATIČKA
+     ======================== -->
+<footer class="site-footer">
+    <p>
+        <span data-i18n="footer.text">MHD Run — hra na honičku po pražské hromadné dopravě.</span>
+        &nbsp;&middot;&nbsp;
+        <a href="https://github.com/Limit-sest/mhd-run">GitHub</a>
+    </p>
+</footer>
+
+<!-- Vlastní skript (musí být za PapaParse) -->
+<script src="js/main.js"></script>
+
+<script>
+(function () {
+    const slides    = document.querySelectorAll('.slide');
+    const dots      = document.querySelectorAll('.dot');
+    const prevBtn   = document.getElementById('slideshow-prev');
+    const nextBtn   = document.getElementById('slideshow-next');
+    let current = 0;
+    let imageTimer = null;
+
+    function isVideo(i) { return slides[i].classList.contains('slide--video'); }
+
+    function stopCurrent() {
+        if (isVideo(current)) {
+            const v = slides[current].querySelector('video');
+            v.pause();
+            v.currentTime = 0;
+            v.ontimeupdate = null;
+            v.onended = null;
+            const bar = slides[current].querySelector('.video-progress-bar');
+            if (bar) bar.style.width = '0%';
+        } else {
+            clearTimeout(imageTimer);
+        }
+    }
+
+    function startCurrent() {
+        if (isVideo(current)) {
+            const v = slides[current].querySelector('video');
+            const bar = slides[current].querySelector('.video-progress-bar');
+            v.ontimeupdate = function () {
+                if (v.duration) bar.style.width = (v.currentTime / v.duration * 100) + '%';
+            };
+            v.onended = function () { goTo(current + 1); };
+            v.play();
+        } else {
+            imageTimer = setTimeout(() => goTo(current + 1), 5000);
+        }
+    }
+
+    function goTo(index) {
+        stopCurrent();
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = ((index % slides.length) + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+        startCurrent();
+    }
+
+    dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+
+    startCurrent();
+})();
+</script>
+
+</body>
+</html>
